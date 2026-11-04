@@ -22,6 +22,7 @@
   button{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:12px 20px;font:600 15px inherit;font-family:inherit;cursor:pointer}
   button:disabled{opacity:.5;cursor:wait}
   .btns{display:flex;gap:10px;align-items:center}
+  select.lang{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px 10px;font:500 14px inherit;font-family:inherit;cursor:pointer}
   button.mic{background:transparent;color:var(--ink);border:1px solid var(--line);padding:11px 16px;font-weight:500}
   button.mic.on{border-color:var(--low);color:var(--low)}
   button.mic.on::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--low);margin-right:8px;animation:pulse 1s infinite}
@@ -62,6 +63,11 @@
   <div class="row">
     <span class="count" id="c">0 / 1200</span>
     <div class="btns">
+      <select id="lang" class="lang" hidden aria-label="Idioma del dictado">
+        <option value="es-AR" selected>ES</option>
+        <option value="en-US">EN</option>
+        <option value="pt-BR">PT</option>
+      </select>
       <button id="mic" class="mic" type="button" hidden aria-pressed="false">🎤 Dictar</button>
       <button id="go">Evaluar</button>
     </div>
@@ -95,8 +101,14 @@ document.querySelectorAll(".ex a").forEach(a => a.onclick = () => { $("t").value
   const mic = $("mic"), msg = $("micmsg"), ta = $("t");
   if (!SR) return;                       // navegador sin soporte: el botón queda oculto
   mic.hidden = false;
+  const sel = $("lang");
+  sel.hidden = false;
   const rec = new SR();
-  rec.lang = (navigator.language || "es-AR").startsWith("es") ? "es-AR" : navigator.language;
+  rec.lang = sel.value;                  // español por defecto, sin depender del idioma del navegador
+  sel.onchange = () => {
+    if (listening) rec.stop();
+    rec.lang = sel.value;
+  };
   rec.continuous = true;
   rec.interimResults = true;
   let base = "", listening = false;
