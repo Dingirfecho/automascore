@@ -156,6 +156,14 @@ $("go").onclick = async () => {
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || "Error");
     out.innerHTML = render(d);
+    if (d.suficiente_info === false) {
+      // Dejar el cursor al final del cuadro para que el visitante agregue su respuesta ahí.
+      const t = $("t");
+      if (!t.value.endsWith("\n")) t.value += "\n\n";
+      t.focus();
+      t.setSelectionRange(t.value.length, t.value.length);
+      t.dispatchEvent(new Event("input"));
+    }
   } catch (e) {
     out.innerHTML = '<p class="err">' + esc(e.message || "No pudimos evaluar el caso. Probá de nuevo.") + '</p>';
   } finally { $("go").disabled = false; $("go").textContent = "Evaluar"; }
@@ -163,7 +171,7 @@ $("go").onclick = async () => {
 
 function render(d) {
   if (d.suficiente_info === false) {
-    return `<div class="card"><h2>Necesitamos un dato más</h2><p>${esc(d.pregunta || "¿Podés describir el proceso con más detalle?")}</p></div>`;
+    return `<div class="card"><h2>Necesitamos un dato más</h2><p>${esc(d.pregunta || "¿Podés describir el proceso con más detalle?")}</p><p style="margin:12px 0 0;color:var(--mute);font-size:14px">↑ Escribí tu respuesta en el cuadro de arriba, a continuación de tu texto, y tocá <b>Evaluar</b> de nuevo.</p></div>`;
   }
   const crit = Object.entries(LABELS).map(([k, l]) => {
     const v = d.criterios?.[k] || 1;
