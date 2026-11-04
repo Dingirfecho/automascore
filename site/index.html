@@ -1,99 +1,170 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AutomaScore · ¿Qué tan automatizable es tu problema?</title>
+<meta name="description" content="Contanos qué proceso te hace perder tiempo y te decimos qué tan automatizable es, con ejemplos de soluciones que AI-Q ya tiene funcionando.">
 <link rel="canonical" href="https://automascore.com/">
-<meta name="description" content="Contanos un problema de tu operación y te decimos qué tan automatizable es, con ejemplos de soluciones que ya tenemos funcionando.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="blueprint.css">
 <style>
-  :root{--bg:#f5f4ef;--ink:#16181d;--mute:#5f646d;--line:#d9d6cc;--card:#fff;--acc:#0b5fff;--ok:#1a7f4b;--mid:#b7791f;--low:#b42318}
-  @media (prefers-color-scheme:dark){:root{--bg:#101216;--ink:#ecebe6;--mute:#9aa0aa;--line:#2a2e36;--card:#171a20;--acc:#6d9bff;--ok:#4cc38a;--mid:#e3b04b;--low:#ff7b72}}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-  .wrap{max-width:760px;margin:0 auto;padding:32px 16px 64px}
-  .tag{font:12px/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;color:var(--mute);text-transform:uppercase}
-  h1{font-size:clamp(28px,5vw,40px);line-height:1.1;margin:12px 0 10px;letter-spacing:-.02em}
-  .lead{color:var(--mute);margin:0 0 24px}
-  textarea{width:100%;min-height:150px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;resize:vertical}
-  textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
-  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
-  .count{font:12px ui-monospace,Menlo,monospace;color:var(--mute)}
-  button{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:12px 20px;font:600 15px inherit;font-family:inherit;cursor:pointer}
-  button:disabled{opacity:.5;cursor:wait}
-  .btns{display:flex;gap:10px;align-items:center}
-  select.lang{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px 10px;font:500 14px inherit;font-family:inherit;cursor:pointer}
-  button.mic{background:transparent;color:var(--ink);border:1px solid var(--line);padding:11px 16px;font-weight:500}
-  button.mic.on{border-color:var(--low);color:var(--low)}
-  button.mic.on::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--low);margin-right:8px;animation:pulse 1s infinite}
-  @keyframes pulse{50%{opacity:.25}}
-  #micmsg{font-size:12.5px;color:var(--mute);margin:8px 0 0;min-height:1em}
-  .ex{margin:14px 0 0;font-size:13px;color:var(--mute)}
-  .ex a{color:var(--acc);cursor:pointer;margin-right:12px;text-decoration:underline}
-  #out{margin-top:28px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
-  .score{display:flex;align-items:baseline;gap:12px}
-  .score b{font-size:48px;line-height:1;letter-spacing:-.03em}
-  .pill{font:600 12px ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;border-radius:99px;border:1px solid currentColor}
-  .alta{color:var(--ok)}.media{color:var(--mid)}.baja{color:var(--low)}
-  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:14px 0 4px}
-  .bar i{display:block;height:100%;background:currentColor}
-  h2{font-size:13px;font-family:ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:0 0 12px;font-weight:600}
-  .crit{display:grid;grid-template-columns:150px 1fr 28px;gap:10px;align-items:center;font-size:14px;margin:6px 0}
-  .crit .bar{margin:0;height:6px;color:var(--acc)}
-  .match a{font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--acc)}
-  .match small{display:block;color:var(--mute);margin-top:2px}
-  .match+.match{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
-  ul{margin:0;padding-left:20px}
-  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
-  .cta a{display:inline-block;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px}
-  .p{background:var(--acc);color:#fff}.s{border:1px solid var(--line);color:var(--ink)}
-  .note{font-size:12.5px;color:var(--mute);margin-top:24px}
-  .err{color:var(--low)}
-  @media(max-width:520px){.crit{grid-template-columns:110px 1fr 24px;font-size:13px}}
+  .wrap{max-width:860px;margin:0 auto;padding:0 var(--aq-pad-page-x)}
+  .hero{margin:48px 0 32px}
+  .hero h1{font-size:clamp(32px,6vw,56px);line-height:1;letter-spacing:-.04em;margin:14px 0 14px;font-weight:500}
+  .hero p{max-width:60ch;color:var(--aq-ink2);font-size:15px;margin:0}
+  .brand-by{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--aq-ink3);margin-left:10px;align-self:flex-end;padding-bottom:3px}
+  .panel{margin-bottom:var(--aq-space-5)}
+  .panel .textarea{min-height:150px;resize:vertical;line-height:1.55}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+  .btns{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btns .select{width:auto;padding:11px 34px 11px 12px;font-size:12px}
+  .btn svg{width:14px;height:14px;display:inline-block}
+  .btn.mic.on{border-color:var(--aq-accent);color:var(--aq-accent)}
+  .btn.mic.on .dot{display:inline-block;width:8px;height:8px;background:var(--aq-accent);animation:pulse 1s infinite}
+  .btn.mic .dot{display:none}
+  @keyframes pulse{50%{opacity:.2}}
+  .count{font-size:11px;letter-spacing:.1em;color:var(--aq-ink3)}
+  #micmsg{font-size:12px;color:var(--aq-ink2);margin:10px 0 0;min-height:1em}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 var(--aq-space-6)}
+  .chips .kicker{margin-right:4px}
+  .chip{cursor:pointer;font-family:var(--aq-font-mono);transition:all var(--aq-t-fast)}
+  .chip:hover{background:var(--aq-ink);color:var(--aq-paper)}
+  .recap{border-left:3px solid var(--aq-mute1);padding:2px 0 2px 14px;margin:0 0 18px;font-size:12px;color:var(--aq-ink2);white-space:pre-wrap;max-height:7.5em;overflow:auto}
+  .q{font-family:var(--aq-font-display);font-size:20px;line-height:1.3;letter-spacing:-.02em;margin:0 0 16px}
+  /* Estado "analizando" */
+  .think .panel-header .accent{animation:pulse 1.2s infinite}
+  .steps{list-style:none;margin:0 0 18px;padding:0}
+  .steps li{display:flex;gap:12px;align-items:center;margin:0;padding:7px 0;font-size:13px;color:var(--aq-mute2);transition:color .2s}
+  .panel-body .steps li{padding-left:0}.panel-body .steps li::before{content:none}
+  .steps li i{width:14px;height:14px;border:1.5px solid currentColor;flex-shrink:0;position:relative}
+  .steps li.done{color:var(--aq-ink)}
+  .steps li.done i{background:var(--aq-success);border-color:var(--aq-success)}
+  .steps li.done i::after{content:"";position:absolute;left:3px;top:0;width:4px;height:8px;border:solid var(--aq-paper);border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .steps li.now{color:var(--aq-ink)}
+  .steps li.now i{border-color:var(--aq-accent);animation:pulse 1s infinite}
+  .scan{height:6px;border:1.5px solid var(--aq-ink);position:relative;overflow:hidden}
+  .scan::after{content:"";position:absolute;top:0;bottom:0;width:30%;background:var(--aq-accent);animation:scan 1.3s ease-in-out infinite}
+  @keyframes scan{0%{left:-30%}100%{left:100%}}
+  #out.busy{opacity:.45;pointer-events:none;transition:opacity .2s}
+  /* Resultado */
+  .score{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .score b{font-family:var(--aq-font-display);font-size:clamp(56px,12vw,88px);line-height:.9;letter-spacing:-.05em;font-weight:500}
+  .score small{font-size:.35em;color:var(--aq-ink3);letter-spacing:0}
+  .alta{color:var(--aq-success)}.media{color:var(--aq-warn)}.baja{color:var(--aq-accent)}
+  .lvl{display:inline-block;border:2px solid currentColor;padding:3px 9px;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+  .meter{height:12px;border:2px solid var(--aq-ink);margin:16px 0 14px;position:relative;background:repeating-linear-gradient(90deg,transparent 0 9.5%,var(--aq-grid-strong) 9.5% 10%)}
+  .meter i{display:block;height:100%;background:currentColor}
+  .res{font-size:14px;line-height:1.6;margin:0;color:var(--aq-ink)}
+  .crit{display:grid;grid-template-columns:150px 1fr 24px;gap:12px;align-items:center;font-size:12px;margin:9px 0;text-transform:uppercase;letter-spacing:.08em}
+  .cells{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+  .cells s{height:10px;border:1.5px solid var(--aq-ink);background:transparent;text-decoration:none}
+  .cells s.on{background:var(--aq-ink)}
+  .match{padding:14px 0;border-top:1.5px solid var(--aq-ink)}
+  .match:first-child{border-top:0;padding-top:0}
+  .match a{font-family:var(--aq-font-display);font-size:18px;font-weight:500;letter-spacing:-.02em;border-bottom:2px solid var(--aq-accent)}
+  .match .label-tag{margin-left:10px;vertical-align:3px}
+  .match p{margin:6px 0 0;font-size:12px;color:var(--aq-ink2)}
+  .panel-body ul{margin:0;padding-left:0;list-style:none}
+  .panel-body ul li{padding-left:22px;position:relative;font-size:13px}
+  .panel-body ul li::before{content:'→';position:absolute;left:0;color:var(--aq-accent)}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 0}
+  .err{border:2px solid var(--aq-accent);color:var(--aq-accent);padding:14px 16px;font-size:13px;margin-bottom:var(--aq-space-5)}
+  .note{font-size:11px;line-height:1.6;color:var(--aq-ink3);margin:0 0 8px;max-width:70ch}
+  .note a{color:var(--aq-ink2);border-bottom:1px solid var(--aq-mute2)}
+  @media(max-width:520px){.crit{grid-template-columns:1fr 90px 20px;gap:8px;font-size:11px}.brand-by{display:none}}
+  @media (prefers-reduced-motion:reduce){.scan::after,.steps li.now i,.think .panel-header .accent{animation:none}}
 </style>
 </head>
 <body>
-<main class="wrap">
-  <div class="tag">AutomaScore · by <a href="https://ai-q.fit" style="color:inherit">AI—Q</a></div>
-  <h1>¿Qué tan automatizable es tu problema?</h1>
-  <p class="lead">Contanos con tus palabras qué proceso te hace perder tiempo. Te decimos qué tan automatizable es y qué soluciones parecidas ya tenemos funcionando.</p>
 
-  <textarea id="t" maxlength="1200" placeholder="Ej: Todos los meses mi equipo recibe 200 certificados de retención en PDF y los carga a mano en SAP. Nos lleva dos días."></textarea>
-  <div class="row">
-    <span class="count" id="c">0 / 1200</span>
-    <div class="btns">
-      <select id="lang" class="lang" hidden aria-label="Idioma del dictado">
-        <option value="es-AR" selected>ES</option>
-        <option value="en-US">EN</option>
-        <option value="pt-BR">PT</option>
-      </select>
-      <button id="mic" class="mic" type="button" hidden aria-pressed="false">🎤 Dictar</button>
-      <button id="go">Evaluar</button>
-    </div>
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="brand" href="https://ai-q.fit">
+      <svg class="brand-mark" viewBox="0 0 80 80" aria-hidden="true">
+        <rect x="2" y="2" width="76" height="76" fill="none" stroke="#0A0A0A" stroke-width="2"/>
+        <line x1="2" y1="40" x2="78" y2="40" stroke="#0A0A0A" stroke-width="1"/>
+        <line x1="40" y1="2" x2="40" y2="78" stroke="#0A0A0A" stroke-width="1"/>
+        <circle cx="40" cy="40" r="18" fill="none" stroke="#FF3D00" stroke-width="2"/>
+        <circle cx="40" cy="40" r="4" fill="#FF3D00"/>
+      </svg>
+      <span class="brand-wordmark">ai—q.fit<span class="slash">/</span></span>
+    </a>
+    <nav class="site-nav" style="display:flex">
+      <a class="nav-link" href="https://ai-q.fit/soluciones.html">Soluciones</a>
+      <a class="btn primary" href="https://calendly.com/dingirfecho/ai-strategy-discovery-call" target="_blank" rel="noopener">Agendá una llamada</a>
+    </nav>
   </div>
-  <p id="micmsg" aria-live="polite"></p>
-  <p class="ex">Probá con:
-    <a data-e="Cada mes bajo los resúmenes del banco en PDF y los paso a Excel a mano para conciliar. Son 6 cuentas en distintos bancos.">resúmenes bancarios</a>
-    <a data-e="Tengo una inmobiliaria y los clientes escriben por WhatsApp a cualquier hora preguntando por propiedades. No llego a contestar todo.">WhatsApp inmobiliaria</a>
-    <a data-e="Mi jefe decide a ojo qué proveedores renegociar según cómo le cae cada uno.">decisión por criterio</a>
-  </p>
+</header>
+
+<main class="wrap">
+  <div class="spec-strip spec-strip-top">
+    <div class="spec-strip-group"><span>DOC // AIQ-SCORE-001</span><span class="mute2">REV / A</span></div>
+    <div class="spec-strip-group"><span><span class="dot">●</span>AUTOMASCORE</span></div>
+  </div>
+
+  <section class="hero">
+    <span class="kicker">Medidor de automatizabilidad</span>
+    <h1 class="display">¿Qué tan automatizable es tu problema?</h1>
+    <p>Contanos con tus palabras qué proceso te hace perder tiempo. Te decimos qué tan automatizable es y qué soluciones parecidas ya tenemos funcionando.</p>
+  </section>
+
+  <section class="panel" id="p1">
+    <div class="panel-header"><span><span class="accent">01</span> / Describí el proceso</span><span class="count" id="c">0 / 2000</span></div>
+    <div class="panel-body">
+      <textarea id="t" class="textarea" maxlength="2000" placeholder="Ej: Todos los meses mi equipo recibe 200 certificados de retención en PDF y los carga a mano en SAP. Nos lleva dos días."></textarea>
+      <div class="row">
+        <div class="btns">
+          <select id="lang" class="select" hidden aria-label="Idioma del dictado">
+            <option value="es-AR" selected>ES</option>
+            <option value="en-US">EN</option>
+            <option value="pt-BR">PT</option>
+          </select>
+          <button id="mic" class="btn mic" type="button" hidden aria-pressed="false">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8" /><path d="M3 7.5a5 5 0 0010 0M8 12.5v2"/></svg>
+            <span class="dot"></span><span class="lbl">Dictar</span>
+          </button>
+        </div>
+        <button id="go" class="btn primary" type="button">Evaluar →</button>
+      </div>
+      <p id="micmsg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="chips">
+    <span class="kicker">Probá con</span>
+    <button class="chip" type="button" data-e="Cada mes bajo los resúmenes del banco en PDF y los paso a Excel a mano para conciliar. Son 6 cuentas en distintos bancos."><span class="chip-dot"></span>resúmenes bancarios</button>
+    <button class="chip" type="button" data-e="Tengo una inmobiliaria y los clientes escriben por WhatsApp a cualquier hora preguntando por propiedades. No llego a contestar todo."><span class="chip-dot"></span>WhatsApp inmobiliaria</button>
+    <button class="chip" type="button" data-e="Mi jefe decide a ojo qué proveedores renegociar según cómo le cae cada uno."><span class="chip-dot"></span>decisión por criterio</button>
+  </div>
 
   <div id="out" aria-live="polite"></div>
+  <div id="think" aria-live="polite"></div>
+
   <p class="note">Es una estimación orientativa basada en lo que escribas, no un diagnóstico. No incluyas datos sensibles ni confidenciales de tu empresa; no guardamos tu texto.</p>
-  <p class="note">AutomaScore es una herramienta de <a href="https://ai-q.fit" style="color:var(--acc)">AI-Q</a>, soluciones de automatización con IA. <a href="https://ai-q.fit/soluciones.html" style="color:var(--acc)">Ver todas las soluciones →</a></p>
+  <p class="note">AutomaScore es una herramienta de <a href="https://ai-q.fit">AI-Q</a>, soluciones de automatización con IA. <a href="https://ai-q.fit/soluciones.html">Ver todas las soluciones →</a></p>
+
+  <div class="spec-strip spec-strip-bottom">
+    <div class="spec-strip-group"><span>© AI-Q Consultores SAS</span></div>
+    <div class="spec-strip-group"><span><a href="https://ai-q.fit">ai-q.fit</a></span></div>
+  </div>
 </main>
 
 <script>
-// URL del Worker desplegado (ver worker.js)
+// URL del Worker desplegado (ver worker/worker.js)
 const ENDPOINT = "https://api.automascore.com";
 const CALENDLY = "https://calendly.com/dingirfecho/ai-strategy-discovery-call";
+const MAXC = 2000;
 const LABELS = {repetitividad:"Repetitividad",reglas_claras:"Reglas claras",datos:"Datos digitales",integracion:"Integrabilidad",impacto:"Impacto",riesgo_bajo:"Riesgo bajo"};
+const STEPS = ["Leyendo tu descripción","Cruzando con las 11 soluciones del catálogo","Puntuando 6 criterios","Armando tu informe"];
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 
-$("t").addEventListener("input", e => $("c").textContent = e.target.value.length + " / 1200");
-document.querySelectorAll(".ex a").forEach(a => a.onclick = () => { $("t").value = a.dataset.e; $("t").dispatchEvent(new Event("input")); });
+$("t").addEventListener("input", e => $("c").textContent = e.target.value.length + " / " + MAXC);
+document.querySelectorAll(".chip").forEach(a => a.onclick = () => { $("t").value = a.dataset.e; $("t").dispatchEvent(new Event("input")); $("t").focus(); });
 
 // ---- Dictado por voz (Web Speech API del navegador) ----
 (() => {
@@ -105,10 +176,7 @@ document.querySelectorAll(".ex a").forEach(a => a.onclick = () => { $("t").value
   sel.hidden = false;
   const rec = new SR();
   rec.lang = sel.value;                  // español por defecto, sin depender del idioma del navegador
-  sel.onchange = () => {
-    if (listening) rec.stop();
-    rec.lang = sel.value;
-  };
+  sel.onchange = () => { if (listening) rec.stop(); rec.lang = sel.value; };
   rec.continuous = true;
   rec.interimResults = true;
   let base = "", listening = false;
@@ -117,7 +185,7 @@ document.querySelectorAll(".ex a").forEach(a => a.onclick = () => { $("t").value
     listening = on;
     mic.classList.toggle("on", on);
     mic.setAttribute("aria-pressed", on);
-    mic.textContent = on ? "Detener" : "🎤 Dictar";
+    mic.querySelector(".lbl").textContent = on ? "Detener" : "Dictar";
     msg.textContent = on ? "Escuchando… hablá con naturalidad y después revisá el texto." : "";
   };
   rec.onresult = e => {
@@ -126,7 +194,7 @@ document.querySelectorAll(".ex a").forEach(a => a.onclick = () => { $("t").value
       const tr = e.results[i][0].transcript;
       e.results[i].isFinal ? finals += tr : interim += tr;
     }
-    ta.value = (base + " " + finals + interim).replace(/\s+/g, " ").trim().slice(0, 1200);
+    ta.value = (base + " " + finals + interim).replace(/\s+/g, " ").trim().slice(0, MAXC);
     ta.dispatchEvent(new Event("input"));
   };
   rec.onerror = e => {
@@ -145,67 +213,112 @@ document.querySelectorAll(".ex a").forEach(a => a.onclick = () => { $("t").value
   };
 })();
 
+// ---- Estado "analizando" ----
+let timer = null;
+function showThinking() {
+  const li = STEPS.map((s, i) => `<li data-i="${i}"><i></i>${s}</li>`).join("");
+  $("think").innerHTML = `<section class="panel think" role="status"><div class="panel-header"><span><span class="accent">●</span> Analizando</span><span class="kicker-tiny">unos segundos</span></div>
+    <div class="panel-body"><ul class="steps">${li}</ul><div class="scan"></div></div></section>`;
+  let n = 0;
+  const paint = () => document.querySelectorAll("#think .steps li").forEach((el, i) => {
+    el.className = i < n ? "done" : i === n ? "now" : "";
+  });
+  paint();
+  clearInterval(timer);
+  timer = setInterval(() => { if (n < STEPS.length - 1) { n++; paint(); } }, 2200);
+  $("think").scrollIntoView({behavior: "smooth", block: "center"});
+}
+function hideThinking() { clearInterval(timer); $("think").innerHTML = ""; }
+
 // La descripción original y las respuestas a repreguntas se guardan acá, no en el cuadro de texto,
 // para que el contexto no se pierda aunque el visitante edite o borre el cuadro.
 let contexto = "";
+let ocupado = false;
 
-async function evaluar(texto, btn, etiqueta) {
+async function evaluar() {
+  if (ocupado) return;
+  ocupado = true;
   const out = $("out");
-  btn.disabled = true; btn.textContent = "Evaluando…"; out.innerHTML = "";
+  const btns = [...document.querySelectorAll("#go, #go2")];
+  const t2 = $("t2");
+  btns.forEach(b => b.disabled = true);
+  $("t").disabled = true; if (t2) t2.disabled = true;
+  out.classList.add("busy");           // lo anterior queda visible pero atenuado: nada desaparece de golpe
+  showThinking();
+  let html = "", d = null;
   try {
-    const r = await fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({texto})});
-    const d = await r.json();
+    const r = await fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({texto: contexto})});
+    d = await r.json();
     if (!r.ok) throw new Error(d.error || "Error");
-    out.innerHTML = render(d);
-    if (d.suficiente_info === false) {
-      const t2 = $("t2"), go2 = $("go2");
-      t2.focus();
-      go2.onclick = () => {
-        const resp = t2.value.trim();
-        if (resp.length < 3) { t2.focus(); return; }
-        contexto += `\n\n[Pregunta de AI-Q] ${d.pregunta || ""}\n[Respuesta del visitante] ${resp}`;
-        evaluar(contexto, go2, "Responder");
-      };
-    }
+    html = render(d);
   } catch (e) {
-    out.innerHTML = '<p class="err">' + esc(e.message || "No pudimos evaluar el caso. Probá de nuevo.") + '</p>';
-  } finally { btn.disabled = false; btn.textContent = etiqueta; }
+    d = null;
+    html = '<div class="err" role="alert">' + esc(e.message || "No pudimos evaluar el caso. Probá de nuevo.") + '</div>' + (out.dataset.keep || "");
+  }
+  hideThinking();
+  out.classList.remove("busy");
+  out.innerHTML = html;
+  out.dataset.keep = d && d.suficiente_info === false ? html : "";
+  $("t").disabled = false;
+  ocupado = false;
+  document.querySelectorAll("#go").forEach(b => b.disabled = false);
+  if (d && d.suficiente_info === false) {
+    const t2n = $("t2"), go2 = $("go2");
+    t2n.focus();
+    t2n.addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) go2.click(); });
+    go2.onclick = () => {
+      const resp = t2n.value.trim();
+      if (resp.length < 3) { t2n.focus(); return; }
+      contexto += `\n\n[Pregunta de AI-Q] ${d.pregunta || ""}\n[Respuesta del visitante] ${resp}`;
+      evaluar();
+    };
+  } else if (d) {
+    out.scrollIntoView({behavior: "smooth", block: "start"});
+  }
 }
 
 $("go").onclick = () => {
   if (document.querySelector("#mic.on")) $("mic").click();   // corta el dictado antes de enviar
   const texto = $("t").value.trim();
-  if (texto.length < 25) { $("out").innerHTML = '<p class="err">Contanos un poco más para poder evaluarlo.</p>'; return; }
+  if (texto.length < 25) { $("out").innerHTML = '<div class="err" role="alert">Contanos un poco más para poder evaluarlo.</div>'; return; }
   contexto = texto;
-  evaluar(contexto, $("go"), "Evaluar");
+  $("out").dataset.keep = "";
+  evaluar();
 };
 
 function render(d) {
   if (d.suficiente_info === false) {
-    return `<div class="card"><h2>Necesitamos un dato más</h2><p>${esc(d.pregunta || "¿Podés describir el proceso con más detalle?")}</p><textarea id="t2" maxlength="600" style="min-height:90px;margin-top:12px" placeholder="Tu respuesta…"></textarea><div class="row"><span class="count">Tu descripción anterior se conserva</span><button id="go2" type="button">Responder</button></div></div>`;
+    return `<section class="panel"><div class="panel-header"><span><span class="accent">02</span> / Necesitamos un dato más</span></div>
+      <div class="panel-body">
+        <div class="recap"><b>Tu descripción:</b> ${esc(contexto.split("\n\n[Pregunta")[0])}</div>
+        <p class="q">${esc(d.pregunta || "¿Podés describir el proceso con más detalle?")}</p>
+        <textarea id="t2" class="textarea" maxlength="600" style="min-height:90px" placeholder="Tu respuesta…" aria-label="Tu respuesta"></textarea>
+        <div class="row"><span class="count">Tu descripción anterior se conserva</span><button id="go2" class="btn primary" type="button">Responder →</button></div>
+      </div></section>`;
   }
   const crit = Object.entries(LABELS).map(([k, l]) => {
-    const v = d.criterios?.[k] || 1;
-    return `<div class="crit"><span>${l}</span><div class="bar"><i style="width:${v*20}%"></i></div><b>${v}</b></div>`;
+    const v = Math.min(5, Math.max(1, d.criterios?.[k] || 1));
+    return `<div class="crit"><span>${l}</span><div class="cells">${[1,2,3,4,5].map(i => `<s class="${i <= v ? "on" : ""}"></s>`).join("")}</div><b>${v}</b></div>`;
   }).join("");
   const matches = (d.matches || []).map(m => `
     <div class="match"><a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.nombre)}</a>
-    <span class="pill ${m.tipo === 'directo' ? 'alta' : 'media'}" style="margin-left:8px">${esc(m.tipo)}</span>
-    <small>${esc(m.area)} · ${esc(m.por_que)}</small></div>`).join("");
+    <span class="label-tag ${m.tipo === 'directo' ? 'accent' : ''}">${esc(m.tipo)}</span>
+    <p>${esc(m.area)} · ${esc(m.por_que)}</p></div>`).join("");
   const val = (d.puntos_a_validar || []).map(p => `<li>${esc(p)}</li>`).join("");
   return `
-  <div class="card ${d.nivel}">
-    <h2>Automatizabilidad estimada</h2>
-    <div class="score"><b>${d.puntaje}/100</b><span class="pill">${esc(d.nivel)}</span></div>
-    <div class="bar"><i style="width:${d.puntaje}%"></i></div>
-    <p style="color:var(--ink);margin:12px 0 0">${esc(d.resumen)}</p>
-  </div>
-  <div class="card"><h2>Detalle</h2>${crit}</div>
-  <div class="card"><h2>Lo que ya tenemos funcionando</h2>${matches || "<p>No encontramos una solución del catálogo que lo cubra tal cual, pero podemos evaluarlo a medida.</p>"}</div>
-  <div class="card"><h2>Cómo se automatizaría</h2><p style="margin:0">${esc(d.como_se_automatizaria)}</p></div>
-  ${val ? `<div class="card"><h2>A validar en una llamada</h2><ul>${val}</ul></div>` : ""}
-  <div class="cta"><a class="p" href="${CALENDLY}" target="_blank" rel="noopener">Agendá una llamada →</a>
-  <a class="s" href="mailto:fedeandino@ai-q.fit?subject=Consulta%20desde%20el%20medidor">Pedí una cotización</a></div>`;
+  <section class="panel ${d.nivel}"><div class="panel-header"><span><span class="accent">02</span> / Automatizabilidad estimada</span></div>
+    <div class="panel-body">
+      <div class="score"><b>${d.puntaje}<small>/100</small></b><span class="lvl">${esc(d.nivel)}</span></div>
+      <div class="meter"><i style="width:${d.puntaje}%"></i></div>
+      <p class="res" style="color:var(--aq-ink)">${esc(d.resumen)}</p>
+    </div></section>
+  <section class="panel"><div class="panel-header"><span>Detalle por criterio</span></div><div class="panel-body">${crit}</div></section>
+  <section class="panel"><div class="panel-header"><span>Lo que ya tenemos funcionando</span></div><div class="panel-body">${matches || "<p style='margin:0'>No encontramos una solución del catálogo que lo cubra tal cual, pero podemos evaluarlo a medida.</p>"}</div></section>
+  <section class="panel"><div class="panel-header"><span>Cómo se automatizaría</span></div><div class="panel-body"><p style="margin:0">${esc(d.como_se_automatizaria)}</p></div></section>
+  ${val ? `<section class="panel"><div class="panel-header"><span>A validar en una llamada</span></div><div class="panel-body"><ul>${val}</ul></div></section>` : ""}
+  <div class="cta"><a class="btn accent btn-lg" href="${CALENDLY}" target="_blank" rel="noopener">Agendá una llamada →</a>
+  <a class="btn btn-lg" href="mailto:fedeandino@ai-q.fit?subject=Consulta%20desde%20AutomaScore">Pedí una cotización</a></div>
+  <div style="height:var(--aq-space-6)"></div>`;
 }
 </script>
 </body>

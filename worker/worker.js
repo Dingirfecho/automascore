@@ -17,7 +17,7 @@ const ALLOWED_ORIGINS = [
 ];
 const MODEL = "claude-sonnet-5-5";
 const MIN_CHARS = 25;
-const MAX_CHARS = 2500;
+const MAX_CHARS = 3500;
 
 const CRITERIOS = [
   "repetitividad",   // ¿se hace seguido y siempre igual?
