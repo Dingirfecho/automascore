@@ -169,20 +169,19 @@ $("t").addEventListener("input", e => $("c").textContent = e.target.value.length
 document.querySelectorAll(".chip").forEach(a => a.onclick = () => { $("t").value = a.dataset.e; $("t").dispatchEvent(new Event("input")); $("t").focus(); });
 
 // ---- Dictado por voz (Web Speech API del navegador) ----
-(() => {
+// Reutilizable: lo usan el cuadro principal y el de respuesta a la repregunta.
+let detenerDictado = null;               // solo un dictado activo a la vez
+function dictado(ta, mic, sel, msg) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const mic = $("mic"), msg = $("micmsg"), ta = $("t");
   if (!SR) return;                       // navegador sin soporte: el botón queda oculto
-  mic.hidden = false;
-  const sel = $("lang");
-  sel.hidden = false;
+  mic.hidden = false; sel.hidden = false;
   const rec = new SR();
   rec.lang = sel.value;                  // español por defecto, sin depender del idioma del navegador
-  sel.onchange = () => { if (listening) rec.stop(); rec.lang = sel.value; };
   rec.continuous = true;
   rec.interimResults = true;
+  const max = +ta.maxLength > 0 ? +ta.maxLength : MAXC;
   let base = "", listening = false;
-
+  sel.onchange = () => { if (listening) rec.stop(); rec.lang = sel.value; };
   const setUI = on => {
     listening = on;
     mic.classList.toggle("on", on);
@@ -196,7 +195,7 @@ document.querySelectorAll(".chip").forEach(a => a.onclick = () => { $("t").value
       const tr = e.results[i][0].transcript;
       e.results[i].isFinal ? finals += tr : interim += tr;
     }
-    ta.value = (base + " " + finals + interim).replace(/\s+/g, " ").trim().slice(0, MAXC);
+    ta.value = (base + " " + finals + interim).replace(/\s+/g, " ").trim().slice(0, max);
     ta.dispatchEvent(new Event("input"));
   };
   rec.onerror = e => {
@@ -210,10 +209,12 @@ document.querySelectorAll(".chip").forEach(a => a.onclick = () => { $("t").value
   rec.onend = () => { if (listening) setUI(false); };
   mic.onclick = () => {
     if (listening) { rec.stop(); return; }
+    if (detenerDictado) detenerDictado();          // corta el otro dictado si estaba activo
     base = ta.value.trim();
-    try { rec.start(); setUI(true); } catch { /* ya estaba iniciado */ }
+    try { rec.start(); setUI(true); detenerDictado = () => rec.stop(); } catch { /* ya estaba iniciado */ }
   };
-})();
+}
+dictado($("t"), $("mic"), $("lang"), $("micmsg"));
 
 // ---- Estado "analizando" ----
 let timer = null;
@@ -266,9 +267,12 @@ async function evaluar() {
   document.querySelectorAll("#go").forEach(b => b.disabled = false);
   if (d && d.suficiente_info === false) {
     const t2n = $("t2"), go2 = $("go2");
+    const l2 = $("lang2"); l2.value = $("lang").value;   // hereda el idioma elegido arriba
+    dictado(t2n, $("mic2"), l2, $("micmsg2"));
     t2n.focus();
     t2n.addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) go2.click(); });
     go2.onclick = () => {
+      if (detenerDictado) detenerDictado();
       const resp = t2n.value.trim();
       if (resp.length < 3) { t2n.focus(); return; }
       contexto += `\n\n[Pregunta de AI-Q] ${d.pregunta || ""}\n[Respuesta del visitante] ${resp}`;
@@ -280,7 +284,7 @@ async function evaluar() {
 }
 
 $("go").onclick = () => {
-  if (document.querySelector("#mic.on")) $("mic").click();   // corta el dictado antes de enviar
+  if (detenerDictado) detenerDictado();   // corta el dictado antes de enviar
   const texto = $("t").value.trim();
   if (texto.length < 25) { $("out").innerHTML = '<div class="err" role="alert">Contanos un poco más para poder evaluarlo.</div>'; return; }
   contexto = texto;
@@ -295,7 +299,11 @@ function render(d) {
         <div class="recap"><b>Tu descripción:</b> ${esc(contexto.split("\n\n[Pregunta")[0])}</div>
         <p class="q">${esc(d.pregunta || "¿Podés describir el proceso con más detalle?")}</p>
         <textarea id="t2" class="textarea" maxlength="600" style="min-height:90px" placeholder="Tu respuesta…" aria-label="Tu respuesta"></textarea>
-        <div class="row"><span class="count">Tu descripción anterior se conserva</span><button id="go2" class="btn primary" type="button">Responder →</button></div>
+        <div class="row"><div class="btns">
+          <select id="lang2" class="select" hidden aria-label="Idioma del dictado"><option value="es-AR">ES</option><option value="en-US">EN</option><option value="pt-BR">PT</option></select>
+          <button id="mic2" class="btn mic" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8"/><path d="M3 7.5a5 5 0 0010 0M8 12.5v2"/></svg><span class="dot"></span><span class="lbl">Dictar</span></button>
+        </div><button id="go2" class="btn primary" type="button">Responder →</button></div>
+        <p id="micmsg2" style="font-size:12px;color:var(--aq-ink2);margin:10px 0 0;min-height:1em" aria-live="polite"></p>
       </div></section>`;
   }
   const crit = Object.entries(LABELS).map(([k, l]) => {
