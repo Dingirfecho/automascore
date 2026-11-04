@@ -1,0 +1,11 @@
+{
+  "name": "automascore",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./site"
+  },
+  "routes": [
+    { "pattern": "automascore.com", "custom_domain": true },
+    { "pattern": "www.automascore.com", "custom_domain": true }
+  ]
+}
