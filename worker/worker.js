@@ -8,12 +8,7 @@ const ALLOWED_ORIGINS = [
   "https://automascore.com",
   "https://www.automascore.com",
   "https://ai-q.fit",
-  "https://www.ai-q.fit",
-  // Pruebas locales (python -m http.server 8000 / Live Server). Borrar al terminar de probar.
-  "http://localhost:8000",
-  "http://127.0.0.1:8000",
-  "http://localhost:5500",
-  "http://127.0.0.1:5500"
+  "https://www.ai-q.fit"
 ];
 const MODEL = "claude-sonnet-5-5";
 const MIN_CHARS = 25;

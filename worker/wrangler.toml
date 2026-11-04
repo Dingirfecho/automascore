@@ -7,9 +7,14 @@ routes = [
   { pattern = "api.automascore.com", custom_domain = true }
 ]
 
-# Límite por IP (opcional, recomendado). Verificá la sintaxis vigente en la documentación
-# de Cloudflare "Workers Rate Limiting" antes de descomentar:
-# [[ratelimits]]
-# name = "LIMITER"
-# namespace_id = "1001"
-# simple = { limit = 10, period = 60 }
+# Límite de consultas por IP (requiere Wrangler 4.36 o superior).
+# period solo admite 10 o 60 segundos. El límite es por ubicación de Cloudflare y aproximado:
+# frena el abuso casual, no es un tope global. El tope real de gasto es el spend limit del
+# Workspace en la consola de Anthropic.
+[[ratelimits]]
+name = "LIMITER"
+namespace_id = "7421"
+
+[ratelimits.simple]
+limit = 6
+period = 60
