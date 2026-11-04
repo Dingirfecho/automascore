@@ -145,33 +145,44 @@ document.querySelectorAll(".ex a").forEach(a => a.onclick = () => { $("t").value
   };
 })();
 
-$("go").onclick = async () => {
-  if (document.querySelector("#mic.on")) $("mic").click();   // corta el dictado antes de enviar
-  const texto = $("t").value.trim();
+// La descripción original y las respuestas a repreguntas se guardan acá, no en el cuadro de texto,
+// para que el contexto no se pierda aunque el visitante edite o borre el cuadro.
+let contexto = "";
+
+async function evaluar(texto, btn, etiqueta) {
   const out = $("out");
-  if (texto.length < 25) { out.innerHTML = '<p class="err">Contanos un poco más para poder evaluarlo.</p>'; return; }
-  $("go").disabled = true; $("go").textContent = "Evaluando…"; out.innerHTML = "";
+  btn.disabled = true; btn.textContent = "Evaluando…"; out.innerHTML = "";
   try {
     const r = await fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({texto})});
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || "Error");
     out.innerHTML = render(d);
     if (d.suficiente_info === false) {
-      // Dejar el cursor al final del cuadro para que el visitante agregue su respuesta ahí.
-      const t = $("t");
-      if (!t.value.endsWith("\n")) t.value += "\n\n";
-      t.focus();
-      t.setSelectionRange(t.value.length, t.value.length);
-      t.dispatchEvent(new Event("input"));
+      const t2 = $("t2"), go2 = $("go2");
+      t2.focus();
+      go2.onclick = () => {
+        const resp = t2.value.trim();
+        if (resp.length < 3) { t2.focus(); return; }
+        contexto += `\n\n[Pregunta de AI-Q] ${d.pregunta || ""}\n[Respuesta del visitante] ${resp}`;
+        evaluar(contexto, go2, "Responder");
+      };
     }
   } catch (e) {
     out.innerHTML = '<p class="err">' + esc(e.message || "No pudimos evaluar el caso. Probá de nuevo.") + '</p>';
-  } finally { $("go").disabled = false; $("go").textContent = "Evaluar"; }
+  } finally { btn.disabled = false; btn.textContent = etiqueta; }
+}
+
+$("go").onclick = () => {
+  if (document.querySelector("#mic.on")) $("mic").click();   // corta el dictado antes de enviar
+  const texto = $("t").value.trim();
+  if (texto.length < 25) { $("out").innerHTML = '<p class="err">Contanos un poco más para poder evaluarlo.</p>'; return; }
+  contexto = texto;
+  evaluar(contexto, $("go"), "Evaluar");
 };
 
 function render(d) {
   if (d.suficiente_info === false) {
-    return `<div class="card"><h2>Necesitamos un dato más</h2><p>${esc(d.pregunta || "¿Podés describir el proceso con más detalle?")}</p><p style="margin:12px 0 0;color:var(--mute);font-size:14px">↑ Escribí tu respuesta en el cuadro de arriba, a continuación de tu texto, y tocá <b>Evaluar</b> de nuevo.</p></div>`;
+    return `<div class="card"><h2>Necesitamos un dato más</h2><p>${esc(d.pregunta || "¿Podés describir el proceso con más detalle?")}</p><textarea id="t2" maxlength="600" style="min-height:90px;margin-top:12px" placeholder="Tu respuesta…"></textarea><div class="row"><span class="count">Tu descripción anterior se conserva</span><button id="go2" type="button">Responder</button></div></div>`;
   }
   const crit = Object.entries(LABELS).map(([k, l]) => {
     const v = d.criterios?.[k] || 1;
