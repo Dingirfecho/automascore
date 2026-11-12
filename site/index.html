@@ -216,6 +216,25 @@ function dictado(ta, mic, sel, msg) {
 }
 dictado($("t"), $("mic"), $("lang"), $("micmsg"));
 
+// Idioma de dictado por defecto según el país de origen (Cloudflare lo informa en /cdn-cgi/trace);
+// si no está disponible, se usa el idioma del navegador. Si el visitante ya eligió uno, no se pisa.
+(async () => {
+  const sel = $("lang");
+  let tocado = false;
+  sel.addEventListener("change", e => { if (e.isTrusted) tocado = true; });
+  const PT = ["BR","PT","AO","MZ","CV","GW","ST","TL"];
+  const ES = ["AR","UY","PY","BO","CL","PE","EC","CO","VE","MX","GT","HN","SV","NI","CR","PA","CU","DO","PR","ES","GQ"];
+  const porPais = c => PT.includes(c) ? "pt-BR" : ES.includes(c) ? "es-AR" : "en-US";
+  const porNavegador = () => { const l = (navigator.language || "").toLowerCase(); return l.startsWith("pt") ? "pt-BR" : l.startsWith("es") ? "es-AR" : "en-US"; };
+  let lang = porNavegador();
+  try {
+    const r = await fetch("/cdn-cgi/trace", {cache: "no-store"});
+    const loc = (await r.text()).match(/^loc=([A-Z]{2})$/m);
+    if (loc && loc[1] !== "XX" && loc[1] !== "T1") lang = porPais(loc[1]);
+  } catch { /* sin geolocalización: queda el idioma del navegador */ }
+  if (!tocado && sel.value !== lang) { sel.value = lang; sel.dispatchEvent(new Event("change")); }
+})();
+
 // ---- Estado "analizando" ----
 let timer = null;
 function showThinking() {
