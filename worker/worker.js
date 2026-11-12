@@ -146,6 +146,23 @@ export default {
       .filter(Boolean)
       .slice(0, 3);
 
+    // Contador anónimo (Workers Analytics Engine): solo cuenta evaluaciones. NO guarda el texto,
+    // ni la IP, ni ningún identificador; el país viene agregado de Cloudflare.
+    try {
+      env.STATS?.writeDataPoint({
+        indexes: [lang],
+        blobs: [
+          lang,                                              // idioma de la interfaz
+          out.suficiente_info === false ? "pregunta" : "ok", // si pidió más datos o evaluó
+          out.nivel || "",                                   // alta / media / baja
+          request.cf?.country || "",                         // país (agregado)
+          texto.includes("[Respuesta del visitante]") ? "2da" : "1ra", // primera o segunda ronda
+          (out.matches || []).map(m => m.id).join(",")       // ids del catálogo sugeridos
+        ],
+        doubles: [1, out.puntaje || 0]                       // 1 = una evaluación; puntaje
+      });
+    } catch { /* el contador nunca debe romper la respuesta */ }
+
     return json(out, 200, origin);
   }
 };

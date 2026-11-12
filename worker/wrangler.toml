@@ -18,3 +18,8 @@ namespace_id = "7421"
 [ratelimits.simple]
 limit = 6
 period = 60
+
+# Contador anónimo de evaluaciones (sin texto ni IP). El dataset se crea solo en la primera escritura.
+[[analytics_engine_datasets]]
+binding = "STATS"
+dataset = "automascore"
