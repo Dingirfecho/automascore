@@ -19,6 +19,7 @@
   .hero h1{font-size:clamp(32px,6vw,56px);line-height:1;letter-spacing:-.04em;margin:14px 0 14px;font-weight:500}
   .hero p{max-width:60ch;color:var(--aq-ink2);font-size:15px;margin:0}
   .brand-by{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--aq-ink3);margin-left:10px;align-self:flex-end;padding-bottom:3px}
+  .badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
   .panel{margin-bottom:var(--aq-space-5)}
   .panel .textarea{min-height:150px;resize:vertical;line-height:1.55}
   .row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
@@ -124,6 +125,7 @@
     <span class="kicker" data-i18n="kicker"></span>
     <h1 class="display" data-i18n="h1"></h1>
     <p data-i18n="hero"></p>
+    <div class="badges"><span class="label-tag accent" data-i18n="free"></span><span class="label-tag" data-i18n="nodata"></span></div>
   </section>
 
   <section class="panel" id="p1">
@@ -181,6 +183,7 @@ const I18N = {
     title: "AutomaScore · ¿Qué tan automatizable es tu problema?",
     desc: "Contanos qué proceso te hace perder tiempo y te decimos qué tan automatizable es, con ejemplos de soluciones que AI-Q ya tiene funcionando.",
     nav_sol: "Soluciones", nav_cta: "Agendá una llamada",
+    free: "100% gratis", nodata: "No guardamos tus datos",
     kicker: "Medidor de automatizabilidad",
     h1: "¿Qué tan automatizable es tu problema?",
     hero: "Contanos con tus palabras qué proceso te hace perder tiempo. Te decimos qué tan automatizable es y qué soluciones parecidas ya tenemos funcionando.",
@@ -198,7 +201,7 @@ const I18N = {
     ex1t: "Cada mes bajo los resúmenes del banco en PDF y los paso a Excel a mano para conciliar. Son 6 cuentas en distintos bancos.",
     ex2t: "Tengo una inmobiliaria y los clientes escriben por WhatsApp a cualquier hora preguntando por propiedades. No llego a contestar todo.",
     ex3t: "Mi jefe decide a ojo qué proveedores renegociar según cómo le cae cada uno.",
-    note1: "Es una estimación orientativa basada en lo que escribas, no un diagnóstico. No incluyas datos sensibles ni confidenciales de tu empresa; no guardamos tu texto.",
+    note1: "Es una estimación orientativa basada en lo que escribas, no un diagnóstico. No incluyas datos sensibles ni confidenciales de tu empresa; no guardamos tu texto: se envía a la API de Anthropic solo para generar la estimación y no queda registrado en AutomaScore.",
     note2: 'AutomaScore es una herramienta de <a href="https://ai-q.fit">AI-Q</a>, soluciones de automatización con IA. <a href="{SOL}">Ver todas las soluciones →</a>',
     steps: ["Leyendo tu descripción","Cruzando con las 11 soluciones del catálogo","Puntuando 6 criterios","Armando tu informe"],
     thinking: "Analizando", secs: "unos segundos",
@@ -217,6 +220,7 @@ const I18N = {
     title: "AutomaScore · How automatable is your problem?",
     desc: "Tell us which process wastes your time and we'll tell you how automatable it is, with examples of solutions AI-Q already has running.",
     nav_sol: "Solutions", nav_cta: "Book a call",
+    free: "100% free", nodata: "We don't store your data",
     kicker: "Automation scorecard",
     h1: "How automatable is your problem?",
     hero: "Tell us in your own words which process wastes your time. We'll tell you how automatable it is and which similar solutions we already have running.",
@@ -234,7 +238,7 @@ const I18N = {
     ex1t: "Every month I download the bank statements as PDFs and copy them into Excel by hand to reconcile. We have 6 accounts at different banks.",
     ex2t: "I run a real estate agency and clients message me on WhatsApp at all hours asking about properties. I can't keep up with all of them.",
     ex3t: "My boss decides by gut feel which suppliers to renegotiate, depending on how much he likes each one.",
-    note1: "This is an indicative estimate based on what you write, not a diagnosis. Don't include sensitive or confidential company data; we don't store your text.",
+    note1: "This is an indicative estimate based on what you write, not a diagnosis. Don't include sensitive or confidential company data; we don't store your text: it is sent to Anthropic's API only to generate the estimate and is not kept by AutomaScore.",
     note2: 'AutomaScore is a tool by <a href="https://ai-q.fit">AI-Q</a>, AI automation solutions. <a href="{SOL}">See all solutions →</a>',
     steps: ["Reading your description","Matching against our 11 catalog solutions","Scoring 6 criteria","Putting your report together"],
     thinking: "Analyzing", secs: "a few seconds",
@@ -253,6 +257,7 @@ const I18N = {
     title: "AutomaScore · Quão automatizável é o seu problema?",
     desc: "Conte qual processo faz você perder tempo e dizemos o quão automatizável ele é, com exemplos de soluções que a AI-Q já tem funcionando.",
     nav_sol: "Soluções", nav_cta: "Agende uma conversa",
+    free: "100% gratuito", nodata: "Não guardamos seus dados",
     kicker: "Medidor de automatizabilidade",
     h1: "Quão automatizável é o seu problema?",
     hero: "Conte com as suas palavras qual processo faz você perder tempo. Dizemos o quão automatizável ele é e quais soluções parecidas já temos funcionando.",
@@ -270,7 +275,7 @@ const I18N = {
     ex1t: "Todo mês baixo os extratos do banco em PDF e passo para o Excel manualmente para conciliar. São 6 contas em bancos diferentes.",
     ex2t: "Tenho uma imobiliária e os clientes escrevem pelo WhatsApp a qualquer hora perguntando sobre imóveis. Não consigo responder a todos.",
     ex3t: "Meu chefe decide no olhômetro quais fornecedores renegociar, conforme a simpatia por cada um.",
-    note1: "É uma estimativa orientativa baseada no que você escrever, não um diagnóstico. Não inclua dados sensíveis ou confidenciais da sua empresa; não guardamos o seu texto.",
+    note1: "É uma estimativa orientativa baseada no que você escrever, não um diagnóstico. Não inclua dados sensíveis ou confidenciais da sua empresa; não guardamos o seu texto: ele é enviado à API da Anthropic apenas para gerar a estimativa e não fica registrado no AutomaScore.",
     note2: 'AutomaScore é uma ferramenta da <a href="https://ai-q.fit">AI-Q</a>, soluções de automação com IA. <a href="{SOL}">Ver todas as soluções →</a>',
     steps: ["Lendo a sua descrição","Cruzando com as 11 soluções do catálogo","Pontuando 6 critérios","Montando o seu relatório"],
     thinking: "Analisando", secs: "alguns segundos",
