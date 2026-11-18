@@ -423,7 +423,7 @@ async function evaluar() {
   hideThinking();
   out.classList.remove("busy");
   if (d) pintar(d, true);
-  else out.insertAdjacentHTML("afterbegin", errHtml);
+  else { out.querySelectorAll(".err").forEach(e => e.remove()); out.insertAdjacentHTML("afterbegin", errHtml); }
   $("t").disabled = false;
   if ($("t2")) $("t2").disabled = false;
   document.querySelectorAll("#go, #go2").forEach(b => b.disabled = false);

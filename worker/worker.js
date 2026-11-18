@@ -118,31 +118,39 @@ export default {
     if (texto.length < MIN_CHARS) return json({ error: M.short }, 400, origin);
     if (texto.length > MAX_CHARS) texto = texto.slice(0, MAX_CHARS);
 
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 1200,
-        system: SYSTEM,
-        messages: [{ role: "user", content: `<idioma_interfaz>${lang}</idioma_interfaz>\n${sap ? `<entorno_sap>\nVersión: ${sap.version.join("; ") || "(no indicada)"}\nMódulos: ${sap.modulos.join("; ") || "(no indicados)"}\nTexto libre: ${sap.texto || "(ninguno)"}\n</entorno_sap>\n` : ""}<problema_del_visitante>\n${texto}\n</problema_del_visitante>` }]
-      })
-    });
-    if (!r.ok) {
-      // Solo para diagnóstico en `wrangler tail`; el visitante no ve este detalle.
-      console.error("Anthropic API error", r.status, (await r.text()).slice(0, 500), "key_set:", Boolean(env.ANTHROPIC_API_KEY));
-      return json({ error: M.fail }, 502, origin);
-    }
+    const contenido = `<idioma_interfaz>${lang}</idioma_interfaz>\n${sap ? `<entorno_sap>\nVersión: ${sap.version.join("; ") || "(no indicada)"}\nMódulos: ${sap.modulos.join("; ") || "(no indicados)"}\nTexto libre: ${sap.texto || "(ninguno)"}\n</entorno_sap>\n` : ""}<problema_del_visitante>\n${texto}\n</problema_del_visitante>`;
 
-    const data = await r.json();
-    const raw = (data.content || []).map(b => b.text || "").join("");
-    let out;
-    try { out = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1)); }
-    catch { return json({ error: M.odd }, 502, origin); }
+    // Hasta 2 intentos: si la respuesta viene cortada o no es JSON válido, se reintenta una vez.
+    let out = null;
+    for (let intento = 1; intento <= 2 && !out; intento++) {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-api-key": env.ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01"
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          max_tokens: 2500,
+          system: SYSTEM,
+          messages: [{ role: "user", content: contenido }]
+        })
+      });
+      if (!r.ok) {
+        // Solo para diagnóstico en `wrangler tail`; el visitante no ve este detalle.
+        console.error("Anthropic API error", r.status, (await r.text()).slice(0, 500), "key_set:", Boolean(env.ANTHROPIC_API_KEY));
+        return json({ error: M.fail }, 502, origin);
+      }
+      const data = await r.json();
+      const raw = (data.content || []).map(b => b.text || "").join("");
+      try { out = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1)); }
+      catch {
+        // Se registra solo el motivo y el largo, nunca el contenido (puede incluir texto del visitante).
+        console.error("JSON no válido, intento", intento, "stop_reason:", data.stop_reason, "len:", raw.length, "out_tokens:", data.usage?.output_tokens);
+      }
+    }
+    if (!out) return json({ error: M.odd }, 502, origin);
 
     // Puntaje determinístico: promedio de criterios (1-5) llevado a 0-100.
     if (out.suficiente_info !== false && out.criterios) {
