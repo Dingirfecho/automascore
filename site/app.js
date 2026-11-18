@@ -197,6 +197,8 @@ const SAP_MOD = [
   {k:"CONCUR", es:"Concur", en:"Concur", pt:"Concur", re:/concur/i},
   {k:"FG",  es:"Fieldglass", en:"Fieldglass", pt:"Fieldglass", re:/field\s*glass/i},
   {k:"BTP", es:"Business Technology Platform (BTP)", en:"Business Technology Platform (BTP)", pt:"Business Technology Platform (BTP)", re:/\bbtp\b|business\s+technology\s+platform/i},
+  {k:"FIORI", es:"Fiori", en:"Fiori", pt:"Fiori", re:/fiori/i},
+  {k:"JOULE", es:"Joule Studio", en:"Joule Studio", pt:"Joule Studio", re:/joule/i},
   {k:"SAC", es:"Analytics Cloud (SAC)", en:"Analytics Cloud (SAC)", pt:"Analytics Cloud (SAC)", re:/analytics\s+cloud|\bsac\b/i},
   {k:"BW",  es:"BW / Datasphere", en:"BW / Datasphere", pt:"BW / Datasphere", re:/\bbw\b|datasphere|bw\s*\/\s*4/i},
   {k:"GRC", es:"GRC", en:"GRC", pt:"GRC", re:/\bgrc\b/i},
