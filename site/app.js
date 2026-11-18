@@ -1,6 +1,10 @@
 // URL del Worker desplegado (ver worker/worker.js)
 const ENDPOINT = "https://api.automascore.com";
 const CALENDLY = "https://calendly.com/dingirfecho/ai-strategy-discovery-call";
+const WA_TXT = {es:"Hola, usé AutomaScore y quisiera conversar sobre mi caso.", en:"Hi, I used AutomaScore and I'd like to talk about my case.", pt:"Olá, usei o AutomaScore e gostaria de conversar sobre o meu caso."};
+// Contacto: si la página define whatsapp (versión BCI) se usa WhatsApp; si no, la agenda de AI-Q.
+const ctaHref = () => (window.AS_CFG && window.AS_CFG.whatsapp) ? `https://wa.me/${window.AS_CFG.whatsapp}?text=${encodeURIComponent(WA_TXT[UI])}` : CALENDLY;
+const ctaMail = () => (window.AS_CFG && window.AS_CFG.mail) || "fedeandino@ai-q.fit";
 const MAXC = 2000;
 const CFG = window.AS_CFG || {};
 const BRAND = CFG.brand || "aiq";
@@ -158,11 +162,11 @@ const DICT = {es:"es-AR", en:"en-US", pt:"pt-BR"};
 // ---------- Versión BCI: marca y entorno SAP ----------
 const BRAND_TXT = {
   bci: {
-    es: { title: "AutomaScore · bci consulting", hero: "Contanos con tus palabras qué proceso te hace perder tiempo y qué SAP tienen. Te decimos qué tan automatizable es y qué soluciones parecidas ya están funcionando.", kicker: "bci consulting · Medidor de automatizabilidad",
+    es: { nav_cta: "WhatsApp", cta1: "Escribinos por WhatsApp →", title: "AutomaScore · bci consulting", hero: "Contanos con tus palabras qué proceso te hace perder tiempo y qué SAP tienen. Te decimos qué tan automatizable es y qué soluciones parecidas ya están funcionando.", kicker: "bci consulting · Medidor de automatizabilidad",
           note2: "AutomaScore es una herramienta de bci consulting. Los ejemplos se toman del catálogo de soluciones de AI-Q." },
-    en: { title: "AutomaScore · bci consulting", hero: "Tell us in your own words which process wastes your time and which SAP you run. We'll tell you how automatable it is and which similar solutions are already running.", kicker: "bci consulting · Automation scorecard",
+    en: { nav_cta: "WhatsApp", cta1: "Message us on WhatsApp →", title: "AutomaScore · bci consulting", hero: "Tell us in your own words which process wastes your time and which SAP you run. We'll tell you how automatable it is and which similar solutions are already running.", kicker: "bci consulting · Automation scorecard",
           note2: "AutomaScore is a bci consulting tool. Examples are drawn from the AI-Q solutions catalog." },
-    pt: { title: "AutomaScore · bci consulting", hero: "Conte com as suas palavras qual processo faz você perder tempo e qual SAP vocês usam. Dizemos o quão automatizável ele é e quais soluções parecidas já estão funcionando.", kicker: "bci consulting · Medidor de automatizabilidade",
+    pt: { nav_cta: "WhatsApp", cta1: "Fale conosco no WhatsApp →", title: "AutomaScore · bci consulting", hero: "Conte com as suas palavras qual processo faz você perder tempo e qual SAP vocês usam. Dizemos o quão automatizável ele é e quais soluções parecidas já estão funcionando.", kicker: "bci consulting · Medidor de automatizabilidade",
           note2: "AutomaScore é uma ferramenta da bci consulting. Os exemplos vêm do catálogo de soluções da AI-Q." }
   }
 };
@@ -290,6 +294,7 @@ function aplicarIdioma(l, manual) {
   const md = document.querySelector('meta[name="description"]'); if (md) md.content = T.desc;
   const sol = "https://ai-q.fit/soluciones" + (l === "es" ? "" : "-" + l) + ".html";
   if ($("navsol")) $("navsol").href = sol;
+  if ($("navcta") && window.AS_CFG && window.AS_CFG.whatsapp) $("navcta").href = ctaHref();
   document.querySelectorAll("[data-i18n]").forEach(el => { el.innerHTML = T[el.dataset.i18n].replace("{SOL}", sol); });
   document.querySelectorAll("[data-i18n-ph]").forEach(el => el.placeholder = T[el.dataset.i18nPh]);
   document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", T[el.dataset.i18nAria]));
@@ -479,8 +484,8 @@ function render(d) {
   <section class="panel"><div class="panel-header"><span>${esc(t("have"))}</span></div><div class="panel-body">${matches || "<p style='margin:0'>" + esc(t("nomatch")) + "</p>"}</div></section>
   <section class="panel"><div class="panel-header"><span>${esc(t("how"))}</span></div><div class="panel-body"><p style="margin:0">${esc(d.como_se_automatizaria)}</p></div></section>
   ${val ? `<section class="panel"><div class="panel-header"><span>${esc(t("validate"))}</span></div><div class="panel-body"><ul>${val}</ul></div></section>` : ""}
-  <div class="cta"><a class="btn accent btn-lg" href="${CALENDLY}" target="_blank" rel="noopener">${esc(t("cta1"))}</a>
-  <a class="btn btn-lg" href="mailto:fedeandino@ai-q.fit?subject=${encodeURIComponent(t("mailsub"))}">${esc(t("cta2"))}</a></div>
+  <div class="cta"><a class="btn accent btn-lg" href="${ctaHref()}" target="_blank" rel="noopener">${esc(t("cta1"))}</a>
+  <a class="btn btn-lg" href="mailto:${ctaMail()}?subject=${encodeURIComponent(t("mailsub"))}">${esc(t("cta2"))}</a></div>
   <div style="height:var(--aq-space-6)"></div>`;
 }
 
