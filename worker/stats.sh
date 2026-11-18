@@ -24,3 +24,7 @@ q "Por país" \
 q "Por idioma y nivel" \
 "SELECT blob1 AS idioma, blob3 AS nivel, SUM(_sample_interval) AS n FROM automascore WHERE blob2 = 'ok'
  GROUP BY idioma, nivel ORDER BY n DESC FORMAT JSONEachRow"
+
+q "Por marca (aiq / bci) y versión SAP declarada" \
+"SELECT blob7 AS marca, blob8 AS sap_version, SUM(_sample_interval) AS n FROM automascore WHERE blob2 = 'ok'
+ GROUP BY marca, sap_version ORDER BY n DESC LIMIT 20 FORMAT JSONEachRow"

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutomaScore · bci consulting</title>
+<meta name="description" content="Contanos qué proceso te hace perder tiempo y te decimos qué tan automatizable es, considerando tu entorno SAP.">
+<link rel="canonical" href="https://automascore.com/bci/">
+<link rel="icon" type="image/png" sizes="32x32" href="/bci/favicon-32.png">
+<link rel="apple-touch-icon" href="/bci/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/bci/bci.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="brand" href="/bci/" aria-label="bci consulting"><img src="/bci/logo-light.png" alt="bci consulting" width="720" height="111"></a>
+    <nav class="site-nav">
+      <a class="btn primary" id="navcta" href="https://calendly.com/dingirfecho/ai-strategy-discovery-call" target="_blank" rel="noopener" data-i18n="nav_cta">Agendá una llamada</a>
+      <span class="lang-switch-group" id="uilang" role="group" aria-label="Idioma / Language">
+        <button type="button" class="lang-switch-opt" data-l="es">ES</button>
+        <button type="button" class="lang-switch-opt" data-l="en">EN</button>
+        <button type="button" class="lang-switch-opt" data-l="pt">PT</button>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="kicker" data-i18n="kicker"></span>
+    <h1 data-i18n="h1"></h1>
+    <p data-i18n="hero"></p>
+    <div class="badges"><span class="label-tag accent" data-i18n="free"></span><span class="label-tag" data-i18n="nodata"></span></div>
+    <img class="sapbadge" src="/bci/sap-platinum.png" alt="SAP Platinum Partner · United VARs" width="760" height="84">
+  </section>
+
+  <section class="panel" id="p1">
+    <div class="panel-header"><span><span class="accent">01</span> / <span data-i18n="p1"></span></span><span class="count" id="c">0 / 2000</span></div>
+    <div class="panel-body">
+      <textarea id="t" class="textarea" maxlength="2000" data-i18n-ph="ph"></textarea>
+      <div class="row">
+        <div class="btns">
+          <select id="lang" class="select" hidden data-i18n-aria="dict_lang">
+            <option value="es-AR" selected>ES</option>
+            <option value="en-US">EN</option>
+            <option value="pt-BR">PT</option>
+          </select>
+          <button id="mic" class="btn mic" type="button" hidden aria-pressed="false">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3 7.5a5 5 0 0010 0M8 12.5v2"/></svg>
+            <span class="dot"></span><span class="lbl"></span>
+          </button>
+        </div>
+      </div>
+      <p id="micmsg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="panel" id="sapbox">
+    <div class="panel-header"><span><span class="accent">02</span> / <span data-i18n="sap_title"></span></span><span class="kicker-tiny" data-i18n="sap_opt"></span></div>
+    <div class="panel-body">
+      <p class="sap-hint" data-i18n="sap_hint"></p>
+      <p class="sap-label" data-i18n="sap_ver"></p>
+      <div class="checks" id="sapver"></div>
+      <p class="sap-label mt" data-i18n="sap_mod"></p>
+      <div class="checks" id="sapmods"></div>
+      <textarea id="sapfree" class="textarea" maxlength="400" data-i18n-ph="sap_free_ph"></textarea>
+      <div class="row">
+        <button id="sapmic" class="btn mic" type="button" hidden aria-pressed="false">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3 7.5a5 5 0 0010 0M8 12.5v2"/></svg>
+          <span class="dot"></span><span class="lbl"></span>
+        </button>
+        <button id="go" class="btn primary btn-lg" type="button" data-i18n="go"></button>
+      </div>
+      <p id="sapmsg" aria-live="polite"></p>
+      <p id="sapparsed" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="chips">
+    <span class="kicker" data-i18n="try"></span>
+    <button class="chip" type="button" data-ex="1"><span class="chip-dot"></span><span class="lbl"></span></button>
+    <button class="chip" type="button" data-ex="2"><span class="chip-dot"></span><span class="lbl"></span></button>
+    <button class="chip" type="button" data-ex="3"><span class="chip-dot"></span><span class="lbl"></span></button>
+  </div>
+
+  <div id="out" aria-live="polite"></div>
+  <div id="think" aria-live="polite"></div>
+
+  <p class="note" data-i18n="note1"></p>
+  <p class="note" data-i18n="note2"></p>
+
+  <p class="tagline">Co-creamos transformaciones</p>
+  <div class="foot">
+    <img src="/bci/logo-light.png" alt="bci consulting" width="720" height="111">
+    <span>© bci consulting · AutomaScore</span>
+  </div>
+</main>
+
+<script>window.AS_CFG = {brand: "bci", sap: true};</script>
+<script src="/app.js"></script>
+</body>
+</html>
